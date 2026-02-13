@@ -1,5 +1,5 @@
-import 'package:ditonton/presentation/pages/home_movie_page.dart';
-import 'package:ditonton/presentation/pages/home_tvseries_page.dart';
+import 'package:movie/movie.dart';
+import 'package:tvseries/tvseries.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

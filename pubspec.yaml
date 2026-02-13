@@ -37,6 +37,15 @@ dependencies:
   flutter_svg: ^2.2.3
   flutter_lints: ^6.0.0
 
+  core: 
+    path: ./core
+  movie:
+    path: ./movie
+  tvseries:
+    path: ./tvseries
+  about:
+    path: ./about
+
 dev_dependencies:
   mockito: ^5.0.8
   build_runner: ^2.0.4

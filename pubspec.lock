@@ -9,6 +9,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "67.0.0"
+  about:
+    dependency: "direct main"
+    description:
+      path: about
+      relative: true
+    source: path
+    version: "0.0.1"
   analyzer:
     dependency: transitive
     description:
@@ -177,6 +184,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  core:
+    dependency: "direct main"
+    description:
+      path: core
+      relative: true
+    source: path
+    version: "0.0.1"
   crypto:
     dependency: transitive
     description:
@@ -466,6 +480,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.4"
+  movie:
+    dependency: "direct main"
+    description:
+      path: movie
+      relative: true
+    source: path
+    version: "0.0.1"
   nested:
     dependency: transitive
     description:
@@ -759,6 +780,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  tvseries:
+    dependency: "direct main"
+    description:
+      path: tvseries
+      relative: true
+    source: path
+    version: "0.0.1"
   typed_data:
     dependency: transitive
     description:
@@ -880,5 +908,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.9.0 <4.0.0"
+  dart: ">=3.10.1 <4.0.0"
   flutter: ">=3.35.0"
