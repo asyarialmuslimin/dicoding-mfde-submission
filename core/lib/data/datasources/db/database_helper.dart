@@ -26,7 +26,7 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE  $TABLE_WATCHLIST_MOVIE (
+      CREATE TABLE  $tableWatchlistMovie (
         id INTEGER PRIMARY KEY,
         title TEXT,
         overview TEXT,
@@ -35,7 +35,7 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-      CREATE TABLE  $TABLE_WATCHLIST_TV_SERIES (
+      CREATE TABLE  $tableWatchlistTVSeries (
         id INTEGER PRIMARY KEY,
         name TEXT,
         overview TEXT,

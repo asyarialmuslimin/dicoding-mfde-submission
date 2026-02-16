@@ -1,1 +1,0 @@
-genhtml coverage/test.info -o coverage --no-function-coverage --prefix /Volumes/DevData/project/a199-flutter-expert-project

@@ -16,14 +16,14 @@ class MovieDaoImpl implements MovieDao {
   @override
   Future<int> insertWatchlist(MovieTable movie) async {
     final db = await databaseHelper.database;
-    return await db!.insert(TABLE_WATCHLIST_MOVIE, movie.toJson());
+    return await db!.insert(tableWatchlistMovie, movie.toJson());
   }
 
   @override
   Future<int> removeWatchlist(MovieTable movie) async {
     final db = await databaseHelper.database;
     return await db!.delete(
-      TABLE_WATCHLIST_MOVIE,
+      tableWatchlistMovie,
       where: 'id = ?',
       whereArgs: [movie.id],
     );
@@ -33,7 +33,7 @@ class MovieDaoImpl implements MovieDao {
   Future<Map<String, dynamic>?> getMovieById(int id) async {
     final db = await databaseHelper.database;
     final result = await db!.query(
-      TABLE_WATCHLIST_MOVIE,
+      tableWatchlistMovie,
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -48,7 +48,7 @@ class MovieDaoImpl implements MovieDao {
   @override
   Future<List<Map<String, dynamic>>> getWatchlistMovies() async {
     final db = await databaseHelper.database;
-    final result = await db!.query(TABLE_WATCHLIST_MOVIE);
+    final result = await db!.query(tableWatchlistMovie);
     return result;
   }
 }

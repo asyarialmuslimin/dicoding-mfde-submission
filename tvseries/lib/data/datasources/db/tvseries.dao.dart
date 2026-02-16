@@ -18,7 +18,7 @@ class TvseriesDaoImpl implements TVSeriesDao {
   Future<TVSeriesTable?> getTVSeriesById(int id) async {
     final db = await databaseHelper.database;
     final maps = await db!.query(
-      TABLE_WATCHLIST_TV_SERIES,
+      tableWatchlistTVSeries,
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -32,14 +32,14 @@ class TvseriesDaoImpl implements TVSeriesDao {
   @override
   Future<int> insertTVSeries(TVSeriesTable tvSeries) async {
     final db = await databaseHelper.database;
-    return await db!.insert(TABLE_WATCHLIST_TV_SERIES, tvSeries.toJson());
+    return await db!.insert(tableWatchlistTVSeries, tvSeries.toJson());
   }
 
   @override
   Future<int> updateTVSeries(TVSeriesTable tvSeries) async {
     final db = await databaseHelper.database;
     return await db!.update(
-      TABLE_WATCHLIST_TV_SERIES,
+      tableWatchlistTVSeries,
       tvSeries.toJson(),
       where: 'id = ?',
       whereArgs: [tvSeries.id],
@@ -50,7 +50,7 @@ class TvseriesDaoImpl implements TVSeriesDao {
   Future<int> deleteTVSeries(TVSeriesTable tvSeries) async {
     final db = await databaseHelper.database;
     return await db!.delete(
-      TABLE_WATCHLIST_TV_SERIES,
+      tableWatchlistTVSeries,
       where: 'id = ?',
       whereArgs: [tvSeries.id],
     );
@@ -59,7 +59,7 @@ class TvseriesDaoImpl implements TVSeriesDao {
   @override
   Future<List<TVSeriesTable>> getAllTVSeries() async {
     final db = await databaseHelper.database;
-    final maps = await db!.query(TABLE_WATCHLIST_TV_SERIES);
+    final maps = await db!.query(tableWatchlistTVSeries);
     return List<TVSeriesTable>.from(
       maps.map((map) => TVSeriesTable.fromMap(map)),
     );

@@ -1,85 +1,53 @@
 import 'package:core/core.dart';
+import 'package:ditonton/utils/http_client_helper.dart';
 import 'package:movie/movie.dart';
 import 'package:tvseries/tvseries.dart';
-import 'package:http/http.dart' as http;
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
 
 final locator = GetIt.instance;
 
-void init() {
-  // provider
-  locator.registerFactory(
-    () => MovieListNotifier(
+Future<void> init() async {
+  // external
+  locator.registerSingletonAsync<http.Client>(() async => getHttpClient());
+
+  await locator.isReady<http.Client>();
+
+  // bloc
+  locator.registerFactory(() => MovieSearchCubit(usecase: locator()));
+  locator.registerFactory(() => MovieListCubit(
       getNowPlayingMovies: locator(),
       getPopularMovies: locator(),
-      getTopRatedMovies: locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => MovieDetailNotifier(
+      getTopRatedMovies: locator()));
+  locator.registerFactory(() => MovieDetailCubit(
       getMovieDetail: locator(),
       getMovieRecommendations: locator(),
-      getWatchListStatus: locator(),
+      getWatchlistStatus: locator(),
       saveWatchlist: locator(),
-      removeWatchlist: locator(),
-    ),
-  );
+      removeWatchlist: locator()));
+  locator.registerFactory(() => PopularMovieCubit(getPopularMovies: locator()));
+  locator
+      .registerFactory(() => TopRatedMovieCubit(getTopRatedMovies: locator()));
   locator.registerFactory(
-    () => MovieSearchNotifier(
-      searchMovies: locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => PopularMoviesNotifier(
-      locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => TopRatedMoviesNotifier(
-      getTopRatedMovies: locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => WatchlistMovieNotifier(
-      getWatchlistMovies: locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => TVSeriesListNotifier(
+      () => WatchlistMovieCubit(getWatchlistMovies: locator()));
+
+  locator.registerFactory(() => TvseriesSearchCubit(searchTVSeries: locator()));
+  locator.registerFactory(() => TvseriesListCubit(
       getNowPlayingTVSeries: locator(),
-      getPopularTVSeries: locator(),
-      getTopRatedTVSeries: locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => TVSeriesDetailNotifier(
-      getTVSeriesDetail: locator(),
+      getPopularTvSeries: locator(),
+      getTopRatedTvSeries: locator()));
+  locator.registerFactory(() => TvseriesDetailCubit(
+      getTvSeriesDetail: locator(),
       getTVSeriesRecommendations: locator(),
-      getWatchlistTVSeriesStatus: locator(),
-      saveWatchlistTVSeries: locator(),
-      removeWatchlistTVSeries: locator(),
-    ),
-  );
+      getWatchlistStatus: locator(),
+      saveWatchlist: locator(),
+      removeWatchlist: locator()));
   locator.registerFactory(
-    () => TVSeriesSearchNotifier(
-      searchTVSeries: locator(),
-    ),
-  );
+      () => PopularTvseriesCubit(getPopularTVSeries: locator()));
   locator.registerFactory(
-    () => PopularTVSeriesNotifier(
-      locator(),
-    ),
-  );
+      () => TopRatedTvseriesCubit(getTopRatedTVSeries: locator()));
   locator.registerFactory(
-    () => TopRatedTVSeriesNotifier(
-      getTopRatedTVSeries: locator(),
-    ),
-  );
-  locator.registerFactory(
-    () => WatchlistTVSeriesNotifier(
-      getWatchlistTVSeries: locator(),
-    ),
-  );
+      () => WatchlistTvseriesCubit(getWatchlistTVSeries: locator()));
 
   // use case
   locator.registerLazySingleton(() => GetNowPlayingMovies(locator()));
@@ -125,17 +93,14 @@ void init() {
 
   // data sources
   locator.registerLazySingleton<MovieRemoteDataSource>(
-      () => MovieRemoteDataSourceImpl(client: locator()));
+      () => MovieRemoteDataSourceImpl(client: locator<http.Client>()));
   locator.registerLazySingleton<MovieLocalDataSource>(
       () => MovieLocalDataSourceImpl(movieDao: locator()));
   locator.registerLazySingleton<TVSeriesRemoteDataSource>(
-      () => TVSeriesRemoteDataSourceImpl(client: locator()));
+      () => TVSeriesRemoteDataSourceImpl(client: locator<http.Client>()));
   locator.registerLazySingleton<TVSeriesLocalDataSource>(
       () => TVSeriesLocalDataSourceImpl(tvSeriesDao: locator()));
 
   // helper
   locator.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
-
-  // external
-  locator.registerLazySingleton(() => http.Client());
 }

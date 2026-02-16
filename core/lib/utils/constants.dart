@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const String BASE_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
+const String baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 
 // colors
 const Color kRichBlack = Color(0xFF000814);
@@ -33,14 +33,14 @@ final TextStyle kBodyText = GoogleFonts.poppins(
 );
 
 // text theme
-final kTextTheme = TextTheme(
+final baseTextTheme = TextTheme(
   headlineMedium: kHeading5,
   headlineSmall: kHeading6,
   labelMedium: kSubtitle,
   bodyMedium: kBodyText,
 );
 
-final kDrawerTheme = DrawerThemeData(backgroundColor: Colors.grey.shade700);
+final baseDrawerTheme = DrawerThemeData(backgroundColor: Colors.grey.shade700);
 
 const kColorScheme = ColorScheme(
   primary: kMikadoYellow,
@@ -55,5 +55,11 @@ const kColorScheme = ColorScheme(
   brightness: Brightness.dark,
 );
 
-const String TABLE_WATCHLIST_MOVIE = 'watchlistMovie';
-const String TABLE_WATCHLIST_TV_SERIES = 'watchlistTvSeries';
+const String tableWatchlistMovie = 'watchlistMovie';
+const String tableWatchlistTVSeries = 'watchlistTvSeries';
+
+const String watchlistAddSuccessMessage = 'Added to Watchlist';
+const String watchlistRemoveSuccessMessage = 'Removed from Watchlist';
+
+const String apiKey = 'api_key=2174d146bb9c0eab47529b2e77d6b526';
+const String baseUrl = 'https://api.themoviedb.org/3';

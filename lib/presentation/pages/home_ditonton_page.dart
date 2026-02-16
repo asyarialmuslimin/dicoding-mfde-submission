@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeDitontonPage extends StatefulWidget {
-  const HomeDitontonPage({Key? key}) : super(key: key);
+  const HomeDitontonPage({super.key});
 
   @override
   State<HomeDitontonPage> createState() => _HomeDitontonPageState();

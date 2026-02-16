@@ -1,18 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:core/core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tvseries/tvseries.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class TVSeriesDetailPage extends StatefulWidget {
-  static const ROUTE_NAME = '/detail-tvseries';
+  static const routeName = '/detail-tvseries';
 
   final int id;
-  const TVSeriesDetailPage({Key? key, required this.id}) : super(key: key);
+  const TVSeriesDetailPage({super.key, required this.id});
 
   @override
-  _TVSeriesDetailPageState createState() => _TVSeriesDetailPageState();
+  State<TVSeriesDetailPage> createState() => _TVSeriesDetailPageState();
 }
 
 class _TVSeriesDetailPageState extends State<TVSeriesDetailPage> {
@@ -20,35 +20,57 @@ class _TVSeriesDetailPageState extends State<TVSeriesDetailPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<TVSeriesDetailNotifier>(
-        context,
-        listen: false,
-      ).fetchTVSeriesDetail(widget.id);
-      Provider.of<TVSeriesDetailNotifier>(
-        context,
-        listen: false,
-      ).loadWatchlistStatus(widget.id);
+      if (mounted) {
+        context.read<TvseriesDetailCubit>()
+          ..fetchTvseriesDetail(widget.id)
+          ..fetchTvseriesDetailRecommendations(widget.id)
+          ..getTvseriesWatchlistStatus(widget.id);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<TVSeriesDetailNotifier>(
-        builder: (context, provider, child) {
-          if (provider.tvSeriesState == RequestState.Loading) {
+      body: BlocConsumer<TvseriesDetailCubit, TvseriesDetailState>(
+        listenWhen: (previous, current) {
+          return previous.tvSeriesWatchlistMessage !=
+              current.tvSeriesWatchlistMessage;
+        },
+        listener: (context, state) {
+          if (state.tvSeriesWatchlistMessage.isHasData) {
+            final message = state.tvSeriesWatchlistMessage.data!;
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          } else if (state.tvSeriesWatchlistMessage.isError) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Text(
+                    state.tvSeriesWatchlistMessage.failure!.message,
+                  ),
+                );
+              },
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state.tvSeriesDetail.isLoading) {
             return Center(child: CircularProgressIndicator());
-          } else if (provider.tvSeriesState == RequestState.Loaded) {
-            final tvSeries = provider.tvSeries;
+          } else if (state.tvSeriesDetail.isHasData) {
+            final tvSeries = state.tvSeriesDetail.data;
             return SafeArea(
               child: DetailContent(
-                tvSeries,
-                provider.tvSeriesRecommendations,
-                provider.isAddedToWatchlist,
+                tvSeries!,
+                state.tvSeriesWishlistStatus.isHasData
+                    ? state.tvSeriesWishlistStatus.data!
+                    : false,
               ),
             );
           } else {
-            return Text(provider.message);
+            return Text(state.tvSeriesDetail.message);
           }
         },
       ),
@@ -58,15 +80,9 @@ class _TVSeriesDetailPageState extends State<TVSeriesDetailPage> {
 
 class DetailContent extends StatelessWidget {
   final TvSeriesDetail tvSeries;
-  final List<TvSeriesEntity> recommendations;
   final bool isAddedWatchlist;
 
-  const DetailContent(
-    this.tvSeries,
-    this.recommendations,
-    this.isAddedWatchlist, {
-    Key? key,
-  }) : super(key: key);
+  const DetailContent(this.tvSeries, this.isAddedWatchlist, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -103,41 +119,13 @@ class DetailContent extends StatelessWidget {
                             FilledButton(
                               onPressed: () async {
                                 if (!isAddedWatchlist) {
-                                  await Provider.of<TVSeriesDetailNotifier>(
-                                    context,
-                                    listen: false,
-                                  ).addWatchlist(tvSeries);
+                                  context
+                                      .read<TvseriesDetailCubit>()
+                                      .saveTvseriesWatchlist(tvSeries);
                                 } else {
-                                  await Provider.of<TVSeriesDetailNotifier>(
-                                    context,
-                                    listen: false,
-                                  ).removeFromWatchlist(tvSeries);
-                                }
-
-                                final message =
-                                    Provider.of<TVSeriesDetailNotifier>(
-                                      context,
-                                      listen: false,
-                                    ).watchlistMessage;
-
-                                if (message ==
-                                        TVSeriesDetailNotifier
-                                            .watchlistAddSuccessMessage ||
-                                    message ==
-                                        TVSeriesDetailNotifier
-                                            .watchlistRemoveSuccessMessage) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(message)),
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        content: Text(message),
-                                      );
-                                    },
-                                  );
+                                  context
+                                      .read<TvseriesDetailCubit>()
+                                      .removeTvseriesWatchlist(tvSeries);
                                 }
                               },
                               child: Row(
@@ -259,7 +247,7 @@ class DetailContent extends StatelessWidget {
                                   onTap: () {
                                     Navigator.pushNamed(
                                       context,
-                                      TVSeriesSeasonListPage.ROUTE_NAME,
+                                      TVSeriesSeasonListPage.routeName,
                                       arguments: tvSeries.seasons,
                                     );
                                   },
@@ -336,31 +324,39 @@ class DetailContent extends StatelessWidget {
                             ),
                             SizedBox(height: 16),
                             Text('Recommendations', style: kHeading6),
-                            Consumer<TVSeriesDetailNotifier>(
-                              builder: (context, data, child) {
-                                if (data.recommendationState ==
-                                    RequestState.Loading) {
+                            BlocBuilder<
+                              TvseriesDetailCubit,
+                              TvseriesDetailState
+                            >(
+                              builder: (context, state) {
+                                if (state.tvSeriesRecommendations.isLoading) {
                                   return Center(
                                     child: CircularProgressIndicator(),
                                   );
-                                } else if (data.recommendationState ==
-                                    RequestState.Error) {
-                                  return Text(data.message);
-                                } else if (data.recommendationState ==
-                                    RequestState.Loaded) {
+                                } else if (state
+                                    .tvSeriesRecommendations
+                                    .isError) {
+                                  return Text(
+                                    state.tvSeriesRecommendations.message,
+                                  );
+                                } else if (state
+                                    .tvSeriesRecommendations
+                                    .isHasData) {
                                   return SizedBox(
                                     height: 150,
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder: (context, index) {
-                                        final tv = recommendations[index];
+                                        final tv = state
+                                            .tvSeriesRecommendations
+                                            .data![index];
                                         return Padding(
                                           padding: const EdgeInsets.all(4.0),
                                           child: InkWell(
                                             onTap: () {
                                               Navigator.pushReplacementNamed(
                                                 context,
-                                                TVSeriesDetailPage.ROUTE_NAME,
+                                                TVSeriesDetailPage.routeName,
                                                 arguments: tv.id,
                                               );
                                             },
@@ -384,7 +380,10 @@ class DetailContent extends StatelessWidget {
                                           ),
                                         );
                                       },
-                                      itemCount: recommendations.length,
+                                      itemCount: state
+                                          .tvSeriesRecommendations
+                                          .data!
+                                          .length,
                                     ),
                                   );
                                 } else {

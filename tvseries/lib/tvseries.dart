@@ -1,3 +1,4 @@
+// ignore: unnecessary_library_name
 library tvseries;
 
 export 'domain/entities/tvseries.dart';
@@ -31,13 +32,6 @@ export 'domain/usecases/search_tvseries.dart';
 export 'domain/usecases/get_tvseries_detail.dart';
 export 'domain/usecases/get_tvseries_recommendations.dart';
 
-export 'presentation/provider/tvseries_detail_notifier.dart';
-export 'presentation/provider/tvseries_list_notifier.dart';
-export 'presentation/provider/tvseries_search_notifier.dart';
-export 'presentation/provider/popular_tvseries_notifier.dart';
-export 'presentation/provider/top_rated_tvseries_notifier.dart';
-export 'presentation/provider/watchlist_tvseries_notifier.dart';
-
 export 'presentation/pages/home_tvseries_page.dart';
 export 'presentation/pages/tvseries_detail_page.dart';
 export 'presentation/pages/popular_tvseries_page.dart';
@@ -47,3 +41,10 @@ export 'presentation/pages/watchlist_tvseries_page.dart';
 export 'presentation/pages/tvseries_season_list_page.dart';
 
 export 'presentation/widgets/tvseries_card_list.dart';
+
+export 'presentation/cubit/tvseries_list_cubit.dart';
+export 'presentation/cubit/popular_tvseries_cubit.dart';
+export 'presentation/cubit/top_rated_tvseries_cubit.dart';
+export 'presentation/cubit/tvseries_detail_cubit.dart';
+export 'presentation/cubit/watchlist_tvseries_cubit.dart';
+export 'presentation/cubit/tvseries_search_cubit.dart';

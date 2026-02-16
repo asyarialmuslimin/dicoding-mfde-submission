@@ -1,1 +1,1 @@
-const ABOUT_ROUTE = '/about';
+const aboutRoute = '/about';

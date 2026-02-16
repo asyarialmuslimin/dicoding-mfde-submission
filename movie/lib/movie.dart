@@ -1,3 +1,4 @@
+// ignore: unnecessary_library_name
 library movie;
 
 export 'data/model/movie_detail_model.dart';
@@ -25,13 +26,6 @@ export 'domain/usecases/search_movies.dart';
 export 'domain/usecases/get_movie_detail.dart';
 export 'domain/usecases/get_movie_recommendations.dart';
 
-export 'presentation/provider/movie_detail_notifier.dart';
-export 'presentation/provider/movie_list_notifier.dart';
-export 'presentation/provider/movie_search_notifier.dart';
-export 'presentation/provider/popular_movies_notifier.dart';
-export 'presentation/provider/top_rated_movies_notifier.dart';
-export 'presentation/provider/watchlist_movie_notifier.dart';
-
 export 'presentation/pages/home_movie_page.dart';
 export 'presentation/pages/movie_detail_page.dart';
 export 'presentation/pages/popular_movies_page.dart';
@@ -40,3 +34,9 @@ export 'presentation/pages/top_rated_movies_page.dart';
 export 'presentation/pages/watchlist_movies_page.dart';
 
 export 'presentation/widgets/movie_card_list.dart';
+export 'presentation/cubit/movie_search_cubit.dart';
+export 'presentation/cubit/movie_list_cubit.dart';
+export 'presentation/cubit/movie_detail_cubit.dart';
+export 'presentation/cubit/popular_movie_cubit.dart';
+export 'presentation/cubit/top_rated_movie_cubit.dart';
+export 'presentation/cubit/watchlist_movie_cubit.dart';

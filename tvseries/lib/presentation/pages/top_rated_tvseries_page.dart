@@ -1,27 +1,25 @@
-import 'package:core/core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tvseries/tvseries.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class TopRatedTVSeriesPage extends StatefulWidget {
-  static const ROUTE_NAME = '/top-rated-tvseries';
+  static const routeName = '/top-rated-tvseries';
 
-  const TopRatedTVSeriesPage({Key? key}) : super(key: key);
+  const TopRatedTVSeriesPage({super.key});
 
   @override
-  _TopRatedTVSeriesPageState createState() => _TopRatedTVSeriesPageState();
+  State<TopRatedTVSeriesPage> createState() => _TopRatedTVSeriesPageState();
 }
 
 class _TopRatedTVSeriesPageState extends State<TopRatedTVSeriesPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => Provider.of<TopRatedTVSeriesNotifier>(
-        context,
-        listen: false,
-      ).fetchTopRatedTVSeries(),
-    );
+    Future.microtask(() {
+      if (mounted) {
+        context.read<TopRatedTvseriesCubit>().fetchTopRatedTvseries();
+      }
+    });
   }
 
   @override
@@ -30,23 +28,23 @@ class _TopRatedTVSeriesPageState extends State<TopRatedTVSeriesPage> {
       appBar: AppBar(title: Text('Top Rated TV Series')),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<TopRatedTVSeriesNotifier>(
-          builder: (context, data, child) {
-            if (data.state == RequestState.Loading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (data.state == RequestState.Loaded) {
+        child: BlocBuilder<TopRatedTvseriesCubit, TopRatedTvseriesState>(
+          builder: (context, state) {
+            if (state.topRatedTvSeries.isHasData) {
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  final tvSeries = data.tvSeries[index];
+                  final tvSeries = state.topRatedTvSeries.data![index];
                   return TVSeriesCard(tvSeries);
                 },
-                itemCount: data.tvSeries.length,
+                itemCount: state.topRatedTvSeries.data!.length,
               );
-            } else {
+            } else if (state.topRatedTvSeries.isError) {
               return Center(
                 key: Key('error_message'),
-                child: Text(data.message),
+                child: Text(state.topRatedTvSeries.failure!.message),
               );
+            } else {
+              return Center(child: CircularProgressIndicator());
             }
           },
         ),

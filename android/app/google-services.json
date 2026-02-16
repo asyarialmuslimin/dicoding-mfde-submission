@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "462166766393",
+    "firebase_url": "https://inlaid-booth-271710.firebaseio.com",
+    "project_id": "inlaid-booth-271710",
+    "storage_bucket": "inlaid-booth-271710.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462166766393:android:cbb52872840dde7541eee8",
+        "android_client_info": {
+          "package_name": "com.dicoding.ditonton"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDffrc4VtNKVbj1LF1Hb1FqVTg6NrK4_Dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
