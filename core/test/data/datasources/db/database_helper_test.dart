@@ -6,7 +6,6 @@ void main() {
   late DatabaseHelper databaseHelper;
 
   setUpAll(() {
-    // Initialize sqflite for testing
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   });
