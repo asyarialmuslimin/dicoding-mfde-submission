@@ -92,7 +92,7 @@ void main() {
   });
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit [Loading, HasData] when get detail success',
+    'should emit [Loading, HasData] when get detail success',
     build: () {
       when(
         mockGetDetail.execute(tId),
@@ -118,7 +118,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit [Loading, Error] when get detail fails',
+    'should emit [Loading, Error] when get detail fails',
     build: () {
       when(
         mockGetDetail.execute(tId),
@@ -146,7 +146,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit [Loading, HasData] when recommendation success',
+    'should emit [Loading, HasData] when recommendation success',
     build: () {
       when(
         mockGetRecommendations.execute(tId),
@@ -172,7 +172,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit [Loading, NoData] when recommendation returns empty',
+    'should emit [Loading, NoData] when recommendation returns empty',
     build: () {
       when(
         mockGetRecommendations.execute(tId),
@@ -198,19 +198,13 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit [Loading, HasData] when watchlist status success',
+    'should emit [HasData] when watchlist status success',
     build: () {
       when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => true);
       return bloc;
     },
     act: (bloc) => bloc.getTvseriesWatchlistStatus(tId),
     expect: () => [
-      TvseriesDetailState(
-        tvSeriesDetail: ViewData.initial(),
-        tvSeriesRecommendations: ViewData.initial(),
-        tvSeriesWishlistStatus: ViewData.loading(),
-        tvSeriesWatchlistMessage: ViewData.initial(),
-      ),
       TvseriesDetailState(
         tvSeriesDetail: ViewData.initial(),
         tvSeriesRecommendations: ViewData.initial(),
@@ -222,7 +216,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit success when add watchlist',
+    'should emit success when add watchlist',
     build: () {
       when(
         mockSaveWatchlist.execute(tTvSeries),
@@ -240,7 +234,7 @@ void main() {
       TvseriesDetailState(
         tvSeriesDetail: ViewData.initial(),
         tvSeriesRecommendations: ViewData.initial(),
-        tvSeriesWishlistStatus: ViewData.initial(),
+        tvSeriesWishlistStatus: ViewData.loaded(data: true),
         tvSeriesWatchlistMessage: ViewData.loaded(
           data: watchlistAddSuccessMessage,
         ),
@@ -250,7 +244,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit error when add watchlist fails',
+    'should emit error when add watchlist fails',
     build: () {
       when(
         mockSaveWatchlist.execute(tTvSeries),
@@ -278,7 +272,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit success when remove watchlist',
+    'should emit success when remove watchlist',
     build: () {
       when(
         mockRemoveWatchlist.execute(tTvSeries),
@@ -296,7 +290,7 @@ void main() {
       TvseriesDetailState(
         tvSeriesDetail: ViewData.initial(),
         tvSeriesRecommendations: ViewData.initial(),
-        tvSeriesWishlistStatus: ViewData.initial(),
+        tvSeriesWishlistStatus: ViewData.loaded(data: false),
         tvSeriesWatchlistMessage: ViewData.loaded(
           data: watchlistRemoveSuccessMessage,
         ),
@@ -306,7 +300,7 @@ void main() {
   );
 
   blocTest<TvseriesDetailCubit, TvseriesDetailState>(
-    'emit error when remove watchlist fails',
+    'should emit error when remove watchlist fails',
     build: () {
       when(
         mockRemoveWatchlist.execute(tTvSeries),
