@@ -2,20 +2,17 @@ workflows:
   default-workflow:
     name: Flutter Test & Build
     max_build_duration: 60
-    instance_type: mac_mini_m2
+    instance_type: linux_x2
     
     environment:
       flutter: stable
-      xcode: latest
-      cocoapods: default
       vars:
-        JAVA_HOME: /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+        JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
     
     cache:
       cache_paths:
         - $HOME/.gradle/caches
         - $HOME/.pub-cache
-        - $HOME/Library/Caches/CocoaPods
     
     triggering:
       events:
@@ -84,29 +81,8 @@ workflows:
         script: |
           echo "🔨 Building Android App Bundle..."
           flutter build appbundle --release
-      
-      # 5. Build iOS
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      
-      - name: Get Flutter packages for iOS
-        script: |
-          flutter packages pub get
-      
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
-      
-      - name: Build iOS
-        script: |
-          echo "🔨 Building iOS..."
-          flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
     
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
