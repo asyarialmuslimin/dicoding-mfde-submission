@@ -1,0 +1,112 @@
+workflows:
+  default-workflow:
+    name: Flutter Test & Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars:
+        JAVA_HOME: /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+    
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
+      cancel_previous_builds: true
+    
+    scripts:
+      # 1. Install dependencies hanya di root
+      - name: Install dependencies
+        script: |
+          echo "📦 Installing dependencies..."
+          flutter pub get
+          echo "✅ Dependencies installed successfully!"
+      
+      # 2. Run Flutter analyzer
+      - name: Run Flutter analyzer
+        script: |
+          echo "🔍 Running Flutter analyzer..."
+          flutter analyze
+        ignore_failure: false
+      
+      # 3. Run tests untuk semua module secara dinamis
+      - name: Run tests for all modules
+        script: |
+          echo "🧪 Running tests for all modules..."
+          echo ""
+          
+          # Variable untuk track test failures
+          TEST_FAILED=0
+          
+          # Loop semua direktori yang memiliki folder test
+          for dir in */; do
+            dir_name="${dir%/}"
+            if [ -d "$dir_name/test" ]; then
+              echo "  → Running tests in $dir_name module..."
+              if flutter test "$dir_name/test"; then
+                echo "    ✅ Tests passed in $dir_name"
+              else
+                echo "    ❌ Tests failed in $dir_name"
+                TEST_FAILED=1
+              fi
+              echo ""
+            fi
+          done
+          
+          # Check jika ada test yang fail
+          if [ $TEST_FAILED -eq 1 ]; then
+            echo "❌ Some tests failed!"
+            exit 1
+          else
+            echo "✅ All tests passed!"
+          fi
+      
+      # 4. Build Android
+      - name: Build Android APK
+        script: |
+          echo "🔨 Building Android APK..."
+          flutter build apk --release
+      
+      - name: Build Android App Bundle
+        script: |
+          echo "🔨 Building Android App Bundle..."
+          flutter build appbundle --release
+      
+      # 5. Build iOS
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      
+      - name: Get Flutter packages for iOS
+        script: |
+          flutter packages pub get
+      
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      
+      - name: Build iOS
+        script: |
+          echo "🔨 Building iOS..."
+          flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+    
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
